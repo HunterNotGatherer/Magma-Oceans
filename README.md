@@ -1,4 +1,2 @@
-# ComputationalPhys
-Cool Science and stuff
-
-First Edits
+# Magma Oceans
+An accretion with integrated mantle/atmosphere evolution. 
