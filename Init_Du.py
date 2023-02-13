@@ -13,5 +13,7 @@ for mass in np.arange(11):
         init_du[ent][mass] = np.sum(initM.radiusPlanet**3*initM.dv*(initM.du.T*initM.rho).T)*1e5/mantM
 
 with open ('init_du.dat','w') as f:
-    print('init_Mass = ', init_Mass, file=f)
-    print('init_du = ',[[y for y in x] for x in init_du],end='',file=f); 
+    print('# Initial Mass\n',init_Mass,'\n# Initial du [entropy,mass] for 1-3 init mass and 1100-3160 entropy',file = f)
+    for x in init_du:
+        [print(np.round(y,2), end=" ", file = f) for y in x]
+        print('', file=f)
