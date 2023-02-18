@@ -13,6 +13,6 @@ for p in np.arange(len(barA[2:])-1): #Appending linear interpolation for points 
     s,b = np.polyfit((thisGrid[0],thisGrid[-1]), (OLRA[2+p], OLRA[2+p+1]), 1)
     OLRGrid = np.append(OLRGrid, s*thisGrid[1:]+b)
     
-with open('F_bar_data.dat', 'w') as f:
+with open('F_bar.dat', 'w') as f:
     print("barGrid = [",end='',file=f); [print(x,end = ',', file=f) for x in barGrid[0:-1]]; print(barGrid[-1],']',file=f)
     print("OLRGrid = [",end='',file=f); [print(round(x,3),end = ',', file=f) for x in OLRGrid[0:-1]]; print(OLRGrid[-1],']',file=f)

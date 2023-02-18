@@ -1,9 +1,10 @@
-#import Dependencies.BarF_Interp
-#import Dependencies.Coef_Interp
+import os
+Dep=os.listdir("Dependencies/")
+for i in Dep:
+    os.rename("Dependencies/"+i,i)
+    
+import BarF_Interp, Coef_Interp, Sigma_Interp, Rho_P_U_Interp, Init_Du
 
-#import Dependencies.Sigma_Interp
-
-#import Dependencies.Rho_P_U_Interp
-#import Init_Du
-#import os
-
+for i in Dep:
+    os.rename(i,"Dependencies/"+i)
+if not os.path.exists("coolData"): os.makedirs("coolData")
