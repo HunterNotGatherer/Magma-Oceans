@@ -13,6 +13,7 @@ debugPrint = 0 # 0 no printing, 1 default, 2 verbose
 #Changelog
 # Em changed to 9e6
 # Pool depth capture angle reduced to pi/4
+# deleted plotting
 
 class Model:
 
