@@ -16,5 +16,5 @@ for mass in np.arange(11):
     print('\n')
 
 with open ('init_du.dat','w') as f:
-    print('init_Mass = ', init_Mass, file=f)
-    print('init_du = ',[[y for y in x] for x in init_du],end='',file=f)
+    print('init_Mass =','\n'+str(init_Mass),file=f)
+    print('init_du =','\n'+str([[y for y in x] for x in init_du]),file=f)
