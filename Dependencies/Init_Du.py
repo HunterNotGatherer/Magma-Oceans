@@ -16,5 +16,6 @@ for mass in np.arange(11):
     print('\n')
 
 with open ('init_du.dat','w') as f:
-    print('init_Mass =','\n'+str(init_Mass),file=f)
-    print('init_du =','\n'+str([[y for y in x] for x in init_du]),file=f)
+    print('# Initial Mass\n',init_Mass,'\n# Initial du [entropy,mass] for 1-3 init mass and 1100-3160 entropy',file = f)
+    for x in init_du:
+        [print(np.round(y,2), end=" ", file = f) for y in x]; print('', file=f)
