@@ -47,7 +47,7 @@ for sim in np.arange(1,SimInput+1):
 # ------------ # Running accretion model    
     entropy=initEnt #start each simulation at ~300K
     for k in np.arange(0,len(JIsorted)):
-        print(k,end=' ')
+        print(k,end=' ',flush=True)
 
 # ------------ # Melt model (Nakajima 2021, doi:10.1016/j.epsl.2021.116983)            
         m = Model(Mtotal=JIsorted[k][2], gamma=JIsorted[k][4], vel=max(1,JIsorted[k][3]), entropy0=entropy, impact_angle=JIsorted[k][1]); resp = m.run_model()

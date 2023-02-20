@@ -12,3 +12,5 @@ if isBuilt: import Init_Du
 
 for i in Dep:
     if os.path.exists(i): os.remove(i)
+
+if not os.path.exists("coolData"): os.makedirs("coolData")
