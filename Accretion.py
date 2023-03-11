@@ -4,27 +4,28 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 # General Settings
-SavingData = True
+SavingData = True # save output to file
 Compressed = True # compress raw data from txt, raw takes much longer and generates much more data, not recommended
-SimInput = len(os.listdir("Nakajima_Inputs")) # array of inputs to run, change to load files from folder automatically
+SimInput = len(os.listdir("Nakajima_Inputs")) # location of input files
 
 # Model Parameters
-RunSteamModel = True # Set to 1 for steam model or 0 for constant atm model
-InitMolten = False 
-initH2O = 205 # earth case 410ppm
-initEnt = 1100 # 1100 for 300k to 3160 for 1800k
+RunSteamModel = False # Set to 1 for steam model or 0 for constant atm model
+InitMolten = False
+initH2O = 410 # earth case 410ppm
+initEnt = 1100 # 1100 for 300k to 3160 for 1900k
 Insolation = True # young sun (75% of todays energy output) with 27.5% and 76% albedo for steam and const atm respectively
 
 # Model Constants
-init_Mass=float([line for line in open('init_du.dat')][1])
-init_du=[[float(y) for y in x.split(' ')[:11]] for x in [line for line in open('init_du.dat')][3:]]
-F_const = 160 - Insolation*(1-.76)*0.75*340 # 160 w/m2 venus like atm, 282 w/m2 for extreme steam atm
-F_Solar=Insolation*0.75*(1-.275)*340 # 75% solar outout, 15-40% albedo
-F_bar = [float(x) for x in [line for line in open('F_bar.dat')][1].split(',')[:-1]] 
-barF=interp1d(np.arange(len(F_bar)), F_bar) #turning log fit into a continuous function -> useful for pressure < 25 bar
-Koliv = 0.007 #partitioning coeff olivine used as whole mantle average -> retains more water -> less water in atm
 Lm = 7.2e5 # J/Kg
 Cv = 1000 # J/(Kg*K) 
+Koliv = 0.007 #partitioning coeff olivine used as whole mantle average -> retains more water -> less water in atm
+F_const = 340*0.75*(1-.76)*Insolation # venus like atm, young sun (Limaye et al 2018; DOI:10.1007/s11214-018-0525-2)
+F_Solar=340*0.75*(1-.275)*Insolation # 15-40% albedo for cloudless steam atm
+
+init_Mass=float([line for line in open('init_du.dat')][1])
+init_du=[[float(y) for y in x.split(' ')[:11]] for x in [line for line in open('init_du.dat')][3:]]
+F_bar = [float(x) for x in [line for line in open('F_bar.dat')][1].split(',')[:-1]] # ~285 w/m2 upper limit
+barF=interp1d(np.arange(len(F_bar)), F_bar) #turning log fit into a continuous function -> useful for pressure < 25 bar
 dt = (24*3600) # Epoch in days, F in seconds; F*dt*stepSize = 1 step
 stepSize = 365*25 # 25 years step size
 UpCoolLim = 365*100000000 # years - 100my upperbound, change appending to not add so much whitespace
@@ -34,7 +35,7 @@ for sim in np.arange(1,SimInput+1):
 # ------------ # data parsing and init - JimaInputs -> ['Name', ' Epoch', ' Angle', ' Mtotal', ' Impact_velocity', ' Gamma']
     data = np.array([[float(q) for q in x] for x in [(z[0].split(', ')[1:6]) for z in [x.split('\n') for x in open("Nakajima_Inputs/AccSim"+str(sim))][1:]]])
     JIsorted=data[data[:,0].argsort()] #sorted by impact date
-    if(InitMolten): JIsorted = np.insert(JIsorted,0,[1,0,init_Mass,1,.2]).reshape(-1,5); initEnt = 3160
+    if(InitMolten): JIsorted = np.insert(JIsorted,0,[1,0,init_Mass,1.2,0.5]).reshape(-1,5); initEnt = 3160
         
 # ------------ # Initialize arrays
     E_rem = np.zeros(2) # energy remaining in melt
@@ -125,7 +126,7 @@ for sim in np.arange(1,SimInput+1):
                     meltDSim[0,epoch+step:] = 0; atmBuildup[epoch+step:] = atmW[0]
                     break # break and fill depth with 0's if all energy is lost to cooling, atm stays constant
 
-                isoMeltEStep = max(0, isoMeltEStep - (barF(atmW[0]) - F_Solar)*surfaceArea*dt*stepSize) # net radiation out  
+                isoMeltEStep = max(0, isoMeltEStep - (barF(min(atmW[0],299)) - F_Solar)*surfaceArea*dt*stepSize) # net radiation out  
 
                 for i in np.arange(len(Ulayer)): # Heat magma, melt layer, convert energy to depth
                     if (isoMeltEStep >= sum(Ulayer[0:i])): 
@@ -173,14 +174,11 @@ for sim in np.arange(1,SimInput+1):
 # ------------ # saving data to file
     print('\n')
     if(SavingData): # steam model, constant model, atmosphere
-        if(Compressed):
-            if(RunSteamModel):
-                np.savez_compressed('coolData/sim_'+str(sim)+'_'+str(initH2O)+'w'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e',meltDSim=meltDSim[0],atmBuildup=atmBuildup)
-            elif(RunSteamModel == 0):
-                np.savez_compressed('coolData/sim_'+str(sim)+'_'+str(initH2O)+'w'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e',meltDSim=meltDSim[1],atmBuildup=atmBuildup)
-        elif(Compressed==False): 
-            if(RunSteamModel):
-                np.savetxt('coolData/sim_'+str(sim)+'_'+str(initH2O)+'w'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e.txt',[meltDSim[0,:],atmBuildup[:]],'%.1f')
-            elif(RunSteamModel == 0):
-                np.savetxt('coolData/sim_'+str(sim)+'_const_'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e.txt',[meltDSim[1,:],atmBuildup[:]],'%.1f')
-        
+        if(RunSteamModel):
+            lastMO=np.max(np.nonzero(meltDSim[0]))+80000 # dont save extra 0's, 2 myr buffer
+            if(Compressed): np.savez_compressed('coolData/sim_'+str(sim)+'_'+str(initH2O)+'w'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e',meltDSim=meltDSim[0,:lastMO],atmBuildup=atmBuildup[:lastMO])
+            elif(Compressed==False): np.savetxt('coolData/sim_'+str(sim)+'_'+str(initH2O)+'w'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e.txt',[meltDSim[0,:lastMO],atmBuildup[:lastMO]],'%.1f')
+        elif(RunSteamModel==0):
+            lastMO=np.max(np.nonzero(meltDSim[1]))+80000 # dont save extra 0's, 2 myr buffer
+            if(Compressed): np.savez_compressed('coolData/sim_'+str(sim)+'_const_'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e',meltDSim=meltDSim[1,:lastMO],atmBuildup=atmBuildup[:lastMO])
+            elif(Compressed==False): np.savetxt('coolData/sim_'+str(sim)+'_const_'+InitMolten*'M'+Insolation*'S'+str(initEnt)+'e.txt',[meltDSim[1,:lastMO],atmBuildup[:lastMO]],'%.1f')

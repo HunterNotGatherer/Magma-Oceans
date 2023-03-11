@@ -1,11 +1,11 @@
 import numpy as np
 np.set_printoptions(threshold=4000, linewidth=4000)
 
-grid = np.arange(91) # can be made finer
+grid = np.arange(91) # can be made finer if needed
 Angles = [0, 30, 60, 90] # default input options
 
 # Reading coef.txt data - 4 angles 15 coef each # Check if values updated on github occasionally
-coef = [line.split() for line in open("coef.txt")] #data files changed, add original to read from
+coef = [line.split() for line in open('coef.txt')] 
 coefDat = np.zeros(shape=(4,15))
 for c in range(0, len(coef)):
     coefDat[c] = [float(i) for i in coef[c]]
@@ -22,5 +22,5 @@ for k in np.arange(len(coefDat[0])):
 
 with open('CoefGrid.txt', 'w') as f:
     for r in np.arange(len(CoefGrid[0])):
-        strings = ["%.8f" % number for number in CoefGrid.T[r]]
+        strings = ['%.8f' % number for number in CoefGrid.T[r]]
         print(' '.join(strings), file=f)

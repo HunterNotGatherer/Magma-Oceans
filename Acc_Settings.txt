@@ -1,0 +1,27 @@
+#####	General Settings		#####
+Input_Dir # location of input files
+Nakajima_Inputs
+SavingData
+1
+Compressed # compress raw data from txt, raw takes much longer and generates much more data, not recommended
+1
+stepSize # 25 years step size
+9125
+
+#####	Model parameters and constants	#####
+RunSteamModel # Set to 1 for steam model or 0 for constant atm model 
+1
+InitMolten
+1
+InitH2O # earth case 410ppm, only used for steam model
+820
+InitEnt # 1100 for 300k to 3160 for 1800k
+1100
+Insolation # young sun (75% of todays energy output) with 27.5% and 76% albedo for steam and const atm respectively
+1
+Lm # Latent heat J/Kg
+7.18e5
+Cv # Heat capacity J/(Kg*K) 
+1000
+Koliv # partitioning coeff olivine used as whole mantle average -> retains more water -> less water in atm
+0.007 
