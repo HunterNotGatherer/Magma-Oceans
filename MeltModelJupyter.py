@@ -83,13 +83,21 @@ class Model:
         self.check_model_integrity()
 
     def check_model_integrity(self):
-        if float(self.entropy0) < 1100.0 or float(self.entropy0) > 3160.0:
-            print("Please choose an entropy (entropy0) value between 1100 and 3160.")
-            sys.exit(1)
-        if float(self.impact_angle) < 0 or float(self.impact_angle) > 90:
-            print("Please choose an impact angle between 0 and 90 degrees.")
-            sys.exit(1)
-
+        if (float(self.entropy0) < 1100.0):
+            self.entropy0 = 1100
+            print("Entropy below bounds, setting to 1100.")
+        if (float(self.entropy0) > 3160.0):
+            self.entropy0 = 3160
+            print("Entropy above bounds, setting to 3160.")
+        
+        if (float(self.impact_angle) < 0 or float(self.impact_angle) > 90):
+            print("Impact angle out of bounds (0 to 90).")
+            if(self.impact_angle%180 > 90):
+                self.impact_angle = 180 - self.impact_angle%180
+            else:
+                self.impact_angle = self.impact_angle%180
+            print("Impact angle",self.impact_angle,"selected instead.")
+            
     # legendre polynomial functions, solutions to a legendre DE
     def __legendre(self, n, x):
         if   n == 0: return 1
