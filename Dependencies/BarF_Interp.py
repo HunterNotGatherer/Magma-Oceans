@@ -2,7 +2,7 @@ import numpy as np
 np.set_printoptions(threshold=4000, linewidth=4000)
 
 barA = np.array([0, 4, 25, 50, 100, 200, 300]) # input pressures and corresponding outgoing longwave radiation below
-OLRA = np.array([200000, 16700, 1360, 670, 400, 300, 285]) # 900k -> black body; 200k -> trace volatiles e.g. silicon vapor
+OLRA = np.array([200000, 16700, 1360, 680, 400, 300, 285]) # 900k -> black body; 200k -> trace volatiles e.g. silicon vapor
 barGrid = np.arange(barA[0],barA[-1]+1)
 
 OLRFit = np.polyfit(barA[0:3], 3.7*np.log10(OLRA[0:3])-13, 1); # log fit for first 3 data points

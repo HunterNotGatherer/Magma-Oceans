@@ -11,7 +11,6 @@ debugPrint = 0 # 0 no printing, 1 default, 2 verbose
 # Fix Dv calculation ( > 100% volume)
 
 #Changelog
-# Em changed to 9e6
 # Pool depth capture angle reduced to pi/4
 # deleted plotting
 
@@ -46,7 +45,7 @@ class Model:
 
         self.Mi = self.gamma * self.Mtotal  # impactor mass
 
-        self.EM = 9e6  # specific energy needed in order for melting to occur
+        self.EM = 5.2e6 # specific energy needed in order for melting to occur
         self.latent_heat = 7.18e5  # latent heat
 
         # relationship between rho-P assuming S0=3160 J/K/kg. We also assume that rho-P structure is the same at S0=1100 J/K/kg.
@@ -61,7 +60,7 @@ class Model:
         self.P_input = np.zeros(shape=(0, 0))
         self.U_input = np.zeros(shape=(0, 0))  # density, pressure, internal energy model
 
-        entropyN = (self.entropy0-1100)//206 #reading corresponding entropy values
+        entropyN = int((self.entropy0-1100)//206) #reading corresponding entropy values
         for m in range(1, len(self.rho_P)):
             self.rho_input = np.append(self.rho_input, float(self.rho_P[m][0]))
             self.P_input = np.append(self.P_input, float(self.rho_P[m][1]) * 1e9)  # converting from GPa to Pa.
@@ -339,7 +338,7 @@ class Model:
         for m in range(0, nr):
             self.rho[m] = self.__compute_density(1e9*self.__compute_pressure(Mt, self.rr[m]))
             for n in range(0, nt):
-                # calculating an incremental  volume at this radius and angle - except its wrong :) totalVol > 100%
+                # calculating an incremental  volume at this radius and angle - except totalVol > 103% :)
                 dV = np.abs(np.pi * self.rr[m] ** 2.0 * np.sin(self.theta_angle[n]) * drr * dangle)  
                 totalV = totalV + dV
                 self.dv[m][n]= dV
